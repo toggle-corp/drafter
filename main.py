@@ -78,6 +78,7 @@ class MyDonut:
 
 root = Column(
     bg_color=[1, 0, 0, 1],
+    margin=Rect(8),
     justify='center',
     align='center',
     border=Border(

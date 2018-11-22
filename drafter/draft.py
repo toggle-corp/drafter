@@ -15,6 +15,8 @@ class ImageDraft(Draft):
         dummy_context = cairo.Context(dummy_surface)
         node.set_context(dummy_context)
 
+        node.x = node.margin.left
+        node.y = node.margin.top
         node.set_relative_parent(None)
         node.update_layout()
 
