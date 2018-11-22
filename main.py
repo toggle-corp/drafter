@@ -1,4 +1,4 @@
-from drafter.draft import Draft
+from drafter.draft import ImageDraft, PdfDraft
 from drafter.utils import Rect
 from drafter.layouts import Row, Column
 
@@ -46,4 +46,5 @@ root = Column(
     ),
 )
 
-Draft(root).save('test.png')
+ImageDraft('test.png').draw(root)
+PdfDraft('test.pdf').draw(root)

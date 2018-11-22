@@ -2,24 +2,52 @@ import cairo
 
 
 class Draft:
-    def __init__(self, node):
+    def __init__(self, filename):
+        self.filename = filename
+
+
+class ImageDraft(Draft):
+    def draw(self, node):
         node.set_relative_parent(None)
         node.update_layout()
         if not node.can_draw():
             raise Exception('Invalid node')
 
-        width = node.x + node.w
-        height = node.y + node.h
+        width = node.w + node.margin.spacing_x()
+        height = node.h + node.margin.spacing_y()
 
         surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32,
-            width, height
+            width, height,
         )
-
         ctx = cairo.Context(surface)
-        node.draw_complete(ctx)
-        self.ctx = ctx
-        self.surface = surface
 
-    def save(self, filename):
-        self.surface.write_to_png(filename)
+        node.draw_complete(ctx)
+
+        surface.write_to_png(self.filename)
+
+
+class PdfDraft(Draft):
+    surface = None
+
+    def draw(self, node):
+        node.set_relative_parent(None)
+        node.update_layout()
+        if not node.can_draw():
+            raise Exception('Invalid node')
+
+        width = node.w + node.margin.spacing_x()
+        height = node.h + node.margin.spacing_y()
+
+        if not self.surface:
+            self.surface = cairo.PDFSurface(
+                self.filename,
+                width, height,
+            )
+        else:
+            self.surface.set_size(width, height)
+
+        ctx = cairo.Context(self.surface)
+        node.draw_complete(ctx)
+        self.surface.show_page()
+        return self
