@@ -1,4 +1,4 @@
-from drafter.utils import Rect
+from drafter.utils import Rect, Border
 
 
 class Node:
@@ -17,7 +17,8 @@ class Node:
 
         self.w = None
         self.h = None
-        self.bg_color = None
+        self.bg_color = [0, 0, 0, 0]
+        self.border = Border()
 
         self.margin = Rect()
         self.padding = Rect()
@@ -102,18 +103,27 @@ class Node:
             self.h is not None
         )
 
-    def draw(self, ctx):
+    def set_context(self, ctx):
+        self.ctx = ctx
+        [c.set_context(ctx) for c in self.children]
+
+    def draw_content(self, x, y, w, h):
         pass
 
-    def draw_complete(self, ctx):
-        if self.bg_color:
-            ctx.set_source_rgba(*self.bg_color)
-            ctx.rectangle(self.x, self.y, self.w, self.h)
-            ctx.fill()
+    def draw(self):
+        self.border.draw(self.ctx, self.x, self.y, self.w, self.h)
+        self.ctx.set_source_rgba(*self.bg_color)
+        self.ctx.fill()
 
-        self.draw(ctx)
+        x = self.x + self.padding.left
+        y = self.y + self.padding.right
+        w = self.w - self.padding.spacing_x()
+        h = self.w - self.padding.spacing_y()
+
+        self.draw_content(x, y, w, h)
+
         [
-            c.draw_complete(ctx)
+            c.draw()
             for c in self.children
             if c.can_draw()
         ]

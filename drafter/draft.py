@@ -8,8 +8,16 @@ class Draft:
 
 class ImageDraft(Draft):
     def draw(self, node):
+        dummy_surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32,
+            16, 16,
+        )
+        dummy_context = cairo.Context(dummy_surface)
+        node.set_context(dummy_context)
+
         node.set_relative_parent(None)
         node.update_layout()
+
         if not node.can_draw():
             raise Exception('Invalid node')
 
@@ -22,7 +30,8 @@ class ImageDraft(Draft):
         )
         ctx = cairo.Context(surface)
 
-        node.draw_complete(ctx)
+        node.set_context(ctx)
+        node.draw()
 
         surface.write_to_png(self.filename)
 
@@ -31,8 +40,13 @@ class PdfDraft(Draft):
     surface = None
 
     def draw(self, node):
+        dummy_surface = cairo.PDFSurface(None, 16, 16)
+        dummy_context = cairo.Context(dummy_surface)
+        node.set_context(dummy_context)
+
         node.set_relative_parent(None)
         node.update_layout()
+
         if not node.can_draw():
             raise Exception('Invalid node')
 
@@ -48,6 +62,9 @@ class PdfDraft(Draft):
             self.surface.set_size(width, height)
 
         ctx = cairo.Context(self.surface)
-        node.draw_complete(ctx)
+
+        node.set_context(ctx)
+        node.draw()
+
         self.surface.show_page()
         return self
