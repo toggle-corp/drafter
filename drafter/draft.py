@@ -7,7 +7,9 @@ class Draft:
 
 
 class ImageDraft(Draft):
-    def draw(self, node):
+    def draw(self, root_node):
+        node = root_node.clone()
+
         dummy_surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32,
             16, 16,
@@ -41,11 +43,14 @@ class ImageDraft(Draft):
 class PdfDraft(Draft):
     surface = None
 
-    def draw(self, node):
+    def draw(self, root_node):
+        node = root_node.clone()
         dummy_surface = cairo.PDFSurface(None, 16, 16)
         dummy_context = cairo.Context(dummy_surface)
         node.set_context(dummy_context)
 
+        node.x = node.margin.left
+        node.y = node.margin.top
         node.set_relative_parent(None)
         node.update_layout()
 

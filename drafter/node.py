@@ -31,6 +31,13 @@ class Node:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+        self.initial_kwargs = kwargs
+
+    def clone(self):
+        node = self.__class__(**self.initial_kwargs)
+        node.add(*[c.clone() for c in self.children])
+        return node
+
     def add(self, *nodes):
         for node in nodes:
             if node.parent:

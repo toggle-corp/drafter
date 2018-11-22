@@ -82,9 +82,9 @@ root = Column(
     justify='center',
     align='center',
     border=Border(
-        32,
-        4,
-        [0, 0, 0, 1],
+        radius=32,
+        width=4,
+        color=[0, 0, 0, 1],
     ),
 ).add(
     Row(
@@ -96,8 +96,8 @@ root = Column(
     ).add(
         Text(
             markup="Hello <b>world</b>",
-            wrap=True,
             font='Ubuntu italic 10',
+            wrap=True,
             wrap_mode=Text.CHAR_WRAP,
             absolute=True,
             padding=Rect(4),
@@ -115,9 +115,9 @@ root = Column(
         align='end',
         relative=True,
         border=Border(
-            32,
-            4,
-            [1, 1, 1, 1],
+            radius=32,
+            width=4,
+            color=[1, 1, 1, 1],
         ),
     ).add(
         Row(
