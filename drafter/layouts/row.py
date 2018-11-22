@@ -5,14 +5,14 @@ class Row(Node):
     align = 'start'
     justify = 'start'
 
+    # TODO: If we separate update_layout into w and h dimensions,
+    # the alogrithm will be more optimized and faster.
     def update_layout(self):
-        # When update_layout is called, self's x and y are already set
-        # but we may need to find w and h.
-        # We also need to find x, y and possible w, h of children.
-
+        # Update w and h from mathematical expressions to single
+        # number, resolving % values.
         self.calculate_layout()
 
-        # We are ready to caculate absolute layout of children
+        # Calculate absolute layout of children
         for c in self.children:
             if c.absolute:
                 c.update_absolute_layout()
@@ -26,8 +26,6 @@ class Row(Node):
 
         if self.w is None:
             # If w is not known, calculate it as total of children's w.
-            # Also, we cannot actually justify children,
-            # so justify at the start.
             w = 0
             x = self.x
             for c in non_absolute_children:
@@ -40,10 +38,12 @@ class Row(Node):
                 w = c.x + c.w + c.margin.spacing_x()
             self.w = w
 
+        # Refresh the children's layout once to better resolve w and h
         for c in self.children:
             c.update_layout()
 
-        # Next calculate x of children based on justify
+        # Next calculate x of children based on justify:
+
         total_w = sum([
             c.w + c.margin.spacing_x()
             for c in non_absolute_children
