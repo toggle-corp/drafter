@@ -95,7 +95,7 @@ class Node:
             self.h = self.height
 
     def update_layout(self):
-        pass
+        self.calculate_layout()
 
     def can_draw(self):
         return (

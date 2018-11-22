@@ -1,3 +1,6 @@
+import cairo
+
+
 class Rect:
     def __init__(self, value=0):
         if isinstance(value, list):
@@ -19,15 +22,23 @@ class Rect:
 
 
 class Border:
+    CAP_BUTT = cairo.LINE_CAP_BUTT
+    CAP_ROUND = cairo.LINE_CAP_ROUND
+    CAP_SQUARE = cairo.LINE_CAP_SQUARE
+
     def __init__(
         self,
         radius=0,
         width=0,
         color=[0, 0, 0, 0],
+        line_cap=CAP_BUTT,
+        line_dash=[],
     ):
         self.radius = radius
         self.width = width
         self.color = color
+        self.line_cap = line_cap
+        self.line_dash = line_dash
 
     def draw(self, ctx, x, y, w, h, preserve=True):
         r = self.radius
@@ -43,6 +54,9 @@ class Border:
 
         ctx.set_line_width(self.width)
         ctx.set_source_rgba(*self.color)
+        ctx.set_dash(self.line_dash)
+        ctx.set_line_cap(self.line_cap)
+
         if preserve:
             ctx.stroke_preserve()
         else:

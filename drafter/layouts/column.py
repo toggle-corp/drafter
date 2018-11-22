@@ -64,7 +64,7 @@ class Column(Node):
                 if c.w is None:
                     raise Exception('Node layout cannot be calculated')
 
-                w = c.x + c.w + c.margin.spacing_x()
+                w = max(w, c.x + c.w + c.margin.spacing_x())
             self.w = w
 
         for c in self.children:

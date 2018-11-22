@@ -72,7 +72,7 @@ class Row(Node):
                 if c.h is None:
                     raise Exception('Node layout cannot be calculated')
 
-                h = c.y + c.h + c.margin.spacing_y()
+                h = max(h, c.y + c.h + c.margin.spacing_y())
             self.h = h
 
         for c in self.children:

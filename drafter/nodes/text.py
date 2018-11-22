@@ -51,7 +51,6 @@ class Text(Node):
             return
 
         self.ctx.save()
-
         self.ctx.translate(x, y)
 
         layout = PangoCairo.create_layout(self.ctx)
