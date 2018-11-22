@@ -8,6 +8,8 @@ class Column(Node):
     def update_layout(self):
         # This is similar to Row but dimensions are swapped
 
+        self.calculate_layout()
+
         for c in self.children:
             if c.absolute:
                 c.update_absolute_layout()
@@ -20,7 +22,7 @@ class Column(Node):
             return
 
         if self.h is None:
-            self.h = 0
+            h = 0
             y = self.y
             for c in non_absolute_children:
                 c.y = y + c.margin.top
@@ -29,17 +31,16 @@ class Column(Node):
                     raise Exception('Node layout cannot be calculated')
 
                 y += c.h + c.margin.spacing_y()
-                self.h = c.y + c.h + c.margin.spacing_y()
+                h = c.y + c.h + c.margin.spacing_y()
+            self.h = h
 
         for c in self.children:
-            if c.h is None and c.hr is not None:
-                c.h = self.h * c.hr
             c.update_layout()
 
         total_h = sum([
             c.h + c.margin.spacing_y()
             for c in non_absolute_children
-            if not c.absolute and c.hr is not None
+            if not c.absolute and c.h is not None
         ])
 
         if self.justify == 'end':
@@ -55,22 +56,18 @@ class Column(Node):
                 y += c.h + c.margin.spacing_y()
 
         if self.w is None:
-            self.w = 0
+            w = 0
             x = self.x
-            for c in self.children:
-                if c.absolute:
-                    continue
-
+            for c in non_absolute_children:
                 c.x = x + c.margin.left
                 c.update_layout()
                 if c.w is None:
                     raise Exception('Node layout cannot be calculated')
 
-                self.w = c.x + c.w + c.margin.spacing_x()
+                w = c.x + c.w + c.margin.spacing_x()
+            self.w = w
 
         for c in self.children:
-            if c.w is None and c.wr is not None:
-                c.w = self.w * c.wr
             c.update_layout()
 
         if self.align == 'end':
@@ -88,5 +85,5 @@ class Column(Node):
             else:
                 c.x = x + c.margin.left
 
-        for c in non_absolute_children:
+        for c in self.children:
             c.update_layout()

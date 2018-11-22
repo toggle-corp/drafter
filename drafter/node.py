@@ -7,14 +7,16 @@ class Node:
 
         self.x = 0
         self.y = 0
+        self.width = None
+        self.height = None
+
         self.top = None
         self.left = None
         self.bottom = None
         self.right = None
+
         self.w = None
         self.h = None
-        self.wr = None
-        self.hr = None
         self.bg_color = None
 
         self.margin = Rect()
@@ -45,6 +47,8 @@ class Node:
         [c.set_relative_parent(relative_parent) for c in self.children]
 
     def update_absolute_layout(self):
+        self.calculate_layout()
+
         if self.relative_parent:
             if self.left is not None:
                 self.x = self.relative_parent.x \
@@ -60,6 +64,34 @@ class Node:
                 self.y = self.relative_parent.y + self.relative_parent.h \
                     - self.bottom - self.margin.bottom - self.h
         self.update_layout()
+
+    def calculate_layout(self):
+        parent_w = self.parent and self.parent.w
+        parent_h = self.parent and self.parent.h
+
+        if isinstance(self.width, str):
+            w = self.width
+            if '%' in w:
+                if not parent_w:
+                    return
+                w = w.replace('%', '* {} / 100'.format(parent_w))
+
+            self.w = eval(w)
+
+        else:
+            self.w = self.width
+
+        if isinstance(self.height, str):
+            h = self.height
+            if '%' in h:
+                if not parent_h:
+                    return
+                h = h.replace('%', '* {} / 100'.format(parent_h))
+
+            self.h = eval(h)
+
+        else:
+            self.h = self.height
 
     def update_layout(self):
         pass

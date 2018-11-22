@@ -10,6 +10,8 @@ class Row(Node):
         # but we may need to find w and h.
         # We also need to find x, y and possible w, h of children.
 
+        self.calculate_layout()
+
         # We are ready to caculate absolute layout of children
         for c in self.children:
             if c.absolute:
@@ -26,7 +28,7 @@ class Row(Node):
             # If w is not known, calculate it as total of children's w.
             # Also, we cannot actually justify children,
             # so justify at the start.
-            self.w = 0
+            w = 0
             x = self.x
             for c in non_absolute_children:
                 c.x = x + c.margin.left
@@ -35,19 +37,17 @@ class Row(Node):
                     raise Exception('Node layout cannot be calculated')
 
                 x += c.w + c.margin.spacing_x()
-                self.w = c.x + c.w + c.margin.spacing_x()
+                w = c.x + c.w + c.margin.spacing_x()
+            self.w = w
 
-        # If w is known, we may need to calculate w and h of children
         for c in self.children:
-            if c.w is None and c.wr is not None:
-                c.w = self.w * c.wr
             c.update_layout()
 
         # Next calculate x of children based on justify
         total_w = sum([
             c.w + c.margin.spacing_x()
             for c in non_absolute_children
-            if not c.absolute and c.w is not None
+            if c.w is not None
         ])
 
         if self.justify == 'end':
@@ -64,22 +64,18 @@ class Row(Node):
 
         # Now do similar to h
         if self.h is None:
-            self.h = 0
+            h = 0
             y = self.y
-            for c in self.children:
-                if c.absolute:
-                    continue
-
+            for c in non_absolute_children:
                 c.y = y + c.margin.top
                 c.update_layout()
                 if c.h is None:
                     raise Exception('Node layout cannot be calculated')
 
-                self.h = c.y + c.h + c.margin.spacing_y()
+                h = c.y + c.h + c.margin.spacing_y()
+            self.h = h
 
         for c in self.children:
-            if c.h is None and c.hr is not None:
-                c.h = self.h * c.hr
             c.update_layout()
 
         if self.align == 'end':
@@ -97,5 +93,5 @@ class Row(Node):
             else:
                 c.y = y + c.margin.top
 
-        for c in non_absolute_children:
+        for c in self.children:
             c.update_layout()

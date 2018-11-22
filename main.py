@@ -8,28 +8,28 @@ root = Column(
 ).add(
     Row(
         bg_color=[0, 1, 0, 1],
-        w=50,
-        h=50,
+        width=50,
+        height=50,
         margin=Rect(16),
     ),
     Row(
         bg_color=[0, 0, 1, 1],
-        w=100,
-        h=100,
+        width=100,
+        height=100,
         justify='start',
         align='end',
         relative=True,
     ).add(
         Row(
             bg_color=[1, 0, 1, 1],
-            wr=0.25,
-            h=50,
+            width='25%',
+            height=50,
             margin=Rect(8),
         ),
         Row(
             bg_color=[1, 1, 1, 0.75],
-            wr=0.25,
-            h=20,
+            width='25%',
+            height=20,
             margin=Rect(8),
         ),
         Row(
@@ -37,8 +37,8 @@ root = Column(
             absolute=True,
             right=8,
             top=-10,
-            w=20,
-            h=20,
+            width=20,
+            height=20,
         ),
     ),
 )
