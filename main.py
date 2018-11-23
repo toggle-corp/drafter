@@ -1,6 +1,6 @@
 from drafter.draft import ImageDraft, PdfDraft
 from drafter.utils import Rect, Border
-from drafter.nodes import Text, Canvas
+from drafter.nodes import Text, Canvas, Image
 from drafter.shapes import (
     Arc, Pie,
     SolidArrow, OpenArrow,
@@ -131,6 +131,12 @@ root = Column(
             width='25%',
             height=20,
             margin=Rect(8),
+        ).add(
+            Image(
+                filename='meta.png',
+                width='100%',
+                height='100%',
+            )
         ),
         Row(
             bg_color=[0, 1, 1, 0.3],

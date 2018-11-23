@@ -32,6 +32,10 @@ class Node:
             setattr(self, key, value)
 
         self.initial_kwargs = kwargs
+        self.init()
+
+    def init(self):
+        pass
 
     def clone(self):
         node = self.__class__(**self.initial_kwargs)
