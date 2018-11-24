@@ -136,7 +136,7 @@ class Node:
         x = self.x + self.padding.left
         y = self.y + self.padding.right
         w = self.w - self.padding.spacing_x()
-        h = self.w - self.padding.spacing_y()
+        h = self.h - self.padding.spacing_y()
 
         self.draw_content(x, y, w, h)
 

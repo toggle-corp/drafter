@@ -6,6 +6,10 @@ from gi.repository import Pango, PangoCairo
 from drafter.node import Node
 
 
+# TODO Reuse pango context instead of using
+# create_layout out of cairo context everytime.
+
+
 class Text(Node):
     WORD_WRAP = Pango.WrapMode.WORD
     CHAR_WRAP = Pango.WrapMode.WORD_CHAR
