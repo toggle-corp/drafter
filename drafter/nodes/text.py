@@ -15,12 +15,17 @@ class Text(Node):
     CHAR_WRAP = Pango.WrapMode.WORD_CHAR
     WORD_CHAR_WRAP = Pango.WrapMode.WORD_CHAR
 
+    LEFT = Pango.Alignment.LEFT
+    CENTER = Pango.Alignment.CENTER
+    RIGHT = Pango.Alignment.RIGHT
+
     text = None
     markup = None
     font = 'Arial  8'
     color = [0, 0, 0, 1]
     wrap = False
     wrap_mode = WORD_WRAP
+    alignment = LEFT
 
     def calculate_layout(self):
         super().calculate_layout()
@@ -32,6 +37,7 @@ class Text(Node):
             layout = PangoCairo.create_layout(self.ctx)
             desc = Pango.font_description_from_string(self.font)
             layout.set_font_description(desc)
+            layout.set_alignment(self.alignment)
 
             if self.text:
                 layout.set_text(self.text, -1)
@@ -60,6 +66,7 @@ class Text(Node):
         layout = PangoCairo.create_layout(self.ctx)
         desc = Pango.font_description_from_string(self.font)
         layout.set_font_description(desc)
+        layout.set_alignment(self.alignment)
 
         if self.text:
             layout.set_text(self.text, -1)

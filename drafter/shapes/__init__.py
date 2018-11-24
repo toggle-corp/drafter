@@ -57,6 +57,17 @@ class Pie(LineShape):
             (ac[1] + c[1]) / 2,
         ]
 
+    def calc_central_point(self, dist, centroid=None):
+        if not centroid:
+            centroid = self.calc_center()
+        center = self.center
+
+        theta = math.atan2(centroid[1] - center[1], centroid[0] - center[0])
+        return [
+            center[0] + dist * math.cos(theta),
+            center[1] + dist * math.sin(theta),
+        ]
+
     def render(self, ctx):
         ctx.move_to(*self.center)
         ctx.arc(self.center[0],
@@ -212,25 +223,30 @@ class String(Shape):
     CHAR_WRAP = Pango.WrapMode.WORD_CHAR
     WORD_CHAR_WRAP = Pango.WrapMode.WORD_CHAR
 
+    LEFT = Pango.Alignment.LEFT
+    CENTER = Pango.Alignment.CENTER
+    RIGHT = Pango.Alignment.RIGHT
+
     text = None
     markup = None
     font = 'Arial  8'
     color = [0, 0, 0, 1]
     wrap = False
     wrap_mode = WORD_WRAP
+    alignment = LEFT
 
-    x = 0
-    y = 0
+    pos = [0, 0]
     width = None
     height = None
 
-    def calc_center(self, ctx):
+    def calc_extents(self, ctx):
         if not self.text and not self.markup:
             return [0, 0]
 
         layout = PangoCairo.create_layout(ctx)
         desc = Pango.font_description_from_string(self.font)
         layout.set_font_description(desc)
+        layout.set_alignment(self.alignment)
 
         if self.text:
             layout.set_text(self.text, -1)
@@ -248,20 +264,34 @@ class String(Shape):
 
         extents = layout.get_extents()[1]
         return [
-            self.x + extents.width / 2 / Pango.SCALE,
-            self.y + extents.height / 2 / Pango.SCALE,
+            extents.width / Pango.SCALE,
+            extents.height / Pango.SCALE,
         ]
+
+    def calc_center(self, ctx):
+        extents = self.calc_extents(ctx)
+        return [
+            self.pos[0] + extents[0] / 2,
+            self.pos[1] + extents[1] / 2,
+        ]
+
+    def repos_to_center(self, ctx):
+        extents = self.calc_extents(ctx)
+        self.pos[0] -= extents[0] / 2
+        self.pos[1] -= extents[1] / 2
+        return self
 
     def render(self, ctx):
         if not self.text and not self.markup:
             return
 
         ctx.save()
-        ctx.translate(self.x, self.y)
+        ctx.translate(self.pos[0], self.pos[1])
 
         layout = PangoCairo.create_layout(ctx)
         desc = Pango.font_description_from_string(self.font)
         layout.set_font_description(desc)
+        layout.set_alignment(self.alignment)
 
         if self.text:
             layout.set_text(self.text, -1)

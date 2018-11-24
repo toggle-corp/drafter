@@ -25,8 +25,7 @@ class MyPie:
 
         text = String(
             text='Pie',
-            x=20,
-            y=20,
+            pos=[20, 20],
         )
         text.render(ctx)
         tc = text.calc_center(ctx)
@@ -111,7 +110,7 @@ root = Column(
         width=100,
         height=100,
         margin=Rect(8),
-        justify='start',
+        justify='space-between',
         align='end',
         relative=True,
         border=Border(

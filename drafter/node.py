@@ -134,7 +134,7 @@ class Node:
         self.ctx.fill()
 
         x = self.x + self.padding.left
-        y = self.y + self.padding.right
+        y = self.y + self.padding.top
         w = self.w - self.padding.spacing_x()
         h = self.h - self.padding.spacing_y()
 

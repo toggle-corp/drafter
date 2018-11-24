@@ -16,6 +16,8 @@ class Canvas(Node):
         self.ctx.save()
         self.ctx.translate(x, y)
 
+        self.renderer.w = w
+        self.renderer.h = h
         self.renderer.render(self.ctx)
 
         self.ctx.restore()
