@@ -37,17 +37,26 @@ class Column(Node):
             if not c.absolute and c.h is not None
         ])
 
+        spacing = 0
         if self.justify == 'end':
             y = self.y - self.padding.bottom + self.h - total_h
         elif self.justify == 'center':
             y = self.y + self.h / 2 - total_h / 2
+        elif self.justify == 'space-between':
+            total_children = sum([
+                1 for c in non_absolute_children
+                if c.h is not None
+            ])
+            diff = max(0, (self.h - self.padding.spacing_y()) - total_h)
+            spacing = diff / (total_children - 1)
+            y = self.y + self.padding.left
         else:
             y = self.y + self.padding.top
 
         for c in non_absolute_children:
             c.y = y + c.margin.top
             if c.h:
-                y += c.h + c.margin.spacing_y()
+                y += c.h + c.margin.spacing_y() + spacing
 
         if self.w is None:
             w = 0

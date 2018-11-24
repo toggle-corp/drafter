@@ -43,17 +43,26 @@ class Row(Node):
             if c.w is not None
         ])
 
+        spacing = 0
         if self.justify == 'end':
             x = self.x - self.padding.right + self.w - total_w
         elif self.justify == 'center':
             x = self.x + self.w / 2 - total_w / 2
+        elif self.justify == 'space-between':
+            total_children = sum([
+                1 for c in non_absolute_children
+                if c.w is not None
+            ])
+            diff = max(0, (self.w - self.padding.spacing_x()) - total_w)
+            spacing = diff / (total_children - 1)
+            x = self.x + self.padding.left
         else:
             x = self.x + self.padding.left
 
         for c in non_absolute_children:
             c.x = x + c.margin.left
             if c.w:
-                x += c.w + c.margin.spacing_x()
+                x += c.w + c.margin.spacing_x() + spacing
 
         # Now do similar to h
         if self.h is None:
