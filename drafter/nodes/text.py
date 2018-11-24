@@ -18,8 +18,8 @@ class Text(Node):
     wrap = False
     wrap_mode = WORD_WRAP
 
-    def update_layout(self):
-        self.calculate_layout()
+    def calculate_layout(self):
+        super().calculate_layout()
 
         if not self.text and not self.markup:
             return

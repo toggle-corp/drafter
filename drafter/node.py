@@ -28,6 +28,8 @@ class Node:
         self.relative = False
         self.relative_parent = None
 
+        self.extra = None
+
         for key, value in kwargs.items():
             setattr(self, key, value)
 
@@ -44,6 +46,9 @@ class Node:
 
     def add(self, *nodes):
         for node in nodes:
+            if not node:
+                continue
+
             if node.parent:
                 raise Exception('Node already added to another parent')
             node.parent = self
@@ -86,6 +91,7 @@ class Node:
             if '%' in w:
                 if not parent_w:
                     return
+                parent_w -= self.parent.padding.spacing_x()
                 w = w.replace('%', '* {} / 100'.format(parent_w))
 
             self.w = eval(w)
@@ -98,6 +104,7 @@ class Node:
             if '%' in h:
                 if not parent_h:
                     return
+                parent_h -= self.parent.padding.spacing_y()
                 h = h.replace('%', '* {} / 100'.format(parent_h))
 
             self.h = eval(h)

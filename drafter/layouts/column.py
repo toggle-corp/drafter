@@ -21,21 +21,15 @@ class Column(Node):
         if len(non_absolute_children) == 0:
             return
 
-        if self.h is None:
-            h = 0
-            y = self.y
-            for c in non_absolute_children:
-                c.y = y + c.margin.top
-                c.update_layout()
-                if c.h is None:
-                    raise Exception('Node layout cannot be calculated')
-
-                y += c.h + c.margin.spacing_y()
-                h = c.y + c.h + c.margin.spacing_y()
-            self.h = h
-
-        for c in self.children:
+        y = self.y + self.padding.top
+        for c in non_absolute_children:
+            c.y = y + c.margin.top
             c.update_layout()
+            if c.h:
+                y += c.h + c.margin.spacing_y()
+
+        if not self.h:
+            self.h = y
 
         total_h = sum([
             c.h + c.margin.spacing_y()
@@ -44,11 +38,11 @@ class Column(Node):
         ])
 
         if self.justify == 'end':
-            y = self.y + self.h - total_h
+            y = self.y - self.padding.bottom + self.h - total_h
         elif self.justify == 'center':
             y = self.y + self.h / 2 - total_h / 2
         else:
-            y = self.y
+            y = self.y + self.padding.top
 
         for c in non_absolute_children:
             c.y = y + c.margin.top
@@ -57,25 +51,23 @@ class Column(Node):
 
         if self.w is None:
             w = 0
-            x = self.x
+            x = self.x + self.padding.left
             for c in non_absolute_children:
                 c.x = x + c.margin.left
                 c.update_layout()
-                if c.w is None:
-                    raise Exception('Node layout cannot be calculated')
-
-                w = max(w, c.x + c.w + c.margin.spacing_x())
+                if c.w:
+                    w = max(w, c.w + c.margin.spacing_x())
             self.w = w
 
         for c in self.children:
             c.update_layout()
 
         if self.align == 'end':
-            x = self.x + self.w
+            x = self.x - self.padding.right + self.w
         elif self.align == 'center':
             x = self.x + self.w / 2
         else:
-            x = self.x
+            x = self.x + self.padding.left
 
         for c in non_absolute_children:
             if self.align == 'center' and c.w:
