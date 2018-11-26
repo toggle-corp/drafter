@@ -28,12 +28,13 @@ class Row(Node):
         x = self.x + self.padding.left
         for c in non_absolute_children:
             c.x = x + c.margin.left
-            c.update_layout()
+            if not c.w:
+                c.update_layout()
             if c.w:
                 x += c.w + c.margin.spacing_x()
 
         if not self.w:
-            self.w = x
+            self.w = x - self.x + self.padding.right
 
         # Next calculate x of children based on justify:
 
@@ -70,13 +71,11 @@ class Row(Node):
             y = self.y + self.padding.top
             for c in non_absolute_children:
                 c.y = y + c.margin.top
-                c.update_layout()
+                if not c.h:
+                    c.update_layout()
                 if c.h:
                     h = max(h, c.h + c.margin.spacing_y())
-            self.h = h
-
-        for c in self.children:
-            c.update_layout()
+            self.h = h + self.padding.bottom
 
         if self.align == 'end':
             y = self.y - self.padding.bottom + self.h

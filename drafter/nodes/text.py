@@ -19,49 +19,23 @@ class Text(Node):
     CENTER = Pango.Alignment.CENTER
     RIGHT = Pango.Alignment.RIGHT
 
+    TOP = 9090
+    MIDDLE = 9099
+    BOTTOM = 9900
+
     text = None
     markup = None
     font = 'Arial  8'
     color = [0, 0, 0, 1]
-    wrap = False
     wrap_mode = WORD_WRAP
     alignment = LEFT
+    vertical_alignment = TOP
 
     def calculate_layout(self):
         super().calculate_layout()
 
         if not self.text and not self.markup:
             return
-
-        if not self.w or not self.h:
-            layout = PangoCairo.create_layout(self.ctx)
-            desc = Pango.font_description_from_string(self.font)
-            layout.set_font_description(desc)
-            layout.set_alignment(self.alignment)
-
-            if self.text:
-                layout.set_text(self.text, -1)
-            if self.markup:
-                layout.set_markup(self.markup, -1)
-
-            extents = layout.get_extents()[1]
-
-        if not self.w:
-            self.w = (extents.width / Pango.SCALE + self.padding.spacing_x())
-        elif self.wrap:
-            w = self.w - self.padding.spacing_x()
-            layout.set_width(w * Pango.SCALE)
-            layout.set_wrap(self.wrap_mode)
-
-        if not self.h:
-            self.h = (extents.height / Pango.SCALE + self.padding.spacing_y())
-
-    def draw_content(self, x, y, w, h):
-        if not self.text and not self.markup:
-            return
-
-        self.ctx.save()
-        self.ctx.translate(x, y)
 
         layout = PangoCairo.create_layout(self.ctx)
         desc = Pango.font_description_from_string(self.font)
@@ -73,9 +47,48 @@ class Text(Node):
         if self.markup:
             layout.set_markup(self.markup, -1)
 
-        if not self.wrap:
+        extents = layout.get_extents()[1]
+        extents = [
+            extents.width / Pango.SCALE,
+            extents.height / Pango.SCALE,
+        ]
+        self.extents = extents
+
+        if self.w is None:
+            self.w = (extents[0] + self.padding.spacing_x())
+        else:
+            w = self.w - self.padding.spacing_x()
+            layout.set_width(w * Pango.SCALE)
+            layout.set_wrap(self.wrap_mode)
+
+        if self.h is None:
+            self.h = (extents[1] + self.padding.spacing_y())
+
+    def draw_content(self, x, y, w, h):
+        if not self.text and not self.markup:
+            return
+
+        self.ctx.save()
+        if self.vertical_alignment == Text.BOTTOM:
+            self.ctx.translate(x, y + h - self.extents[1])
+        elif self.vertical_alignment == Text.MIDDLE:
+            self.ctx.translate(x, y + h / 2 - self.extents[1] / 2)
+        else:
+            self.ctx.translate(x, y)
+
+        layout = PangoCairo.create_layout(self.ctx)
+        desc = Pango.font_description_from_string(self.font)
+        layout.set_font_description(desc)
+        layout.set_alignment(self.alignment)
+
+        if self.text:
+            layout.set_text(self.text, -1)
+        if self.markup:
+            layout.set_markup(self.markup, -1)
+
+        if not w:
             layout.set_width(-1)
-        elif w > 0:
+        else:
             layout.set_width(w * Pango.SCALE)
             layout.set_wrap(self.wrap_mode)
 

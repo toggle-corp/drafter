@@ -53,7 +53,7 @@ class Draft:
         width *= scale
         height *= scale
 
-        surface = self.get_surface(width, height)
+        surface = self.get_surface(round(width), round(height))
         ctx = cairo.Context(surface)
 
         node.set_context(ctx)

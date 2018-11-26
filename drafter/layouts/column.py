@@ -24,12 +24,13 @@ class Column(Node):
         y = self.y + self.padding.top
         for c in non_absolute_children:
             c.y = y + c.margin.top
-            c.update_layout()
+            if not c.h:
+                c.update_layout()
             if c.h:
                 y += c.h + c.margin.spacing_y()
 
         if not self.h:
-            self.h = y
+            self.h = y - self.y + self.padding.bottom
 
         total_h = sum([
             c.h + c.margin.spacing_y()
@@ -49,7 +50,7 @@ class Column(Node):
             ])
             diff = max(0, (self.h - self.padding.spacing_y()) - total_h)
             spacing = diff / (total_children - 1)
-            y = self.y + self.padding.left
+            y = self.y + self.padding.top
         else:
             y = self.y + self.padding.top
 
@@ -63,13 +64,14 @@ class Column(Node):
             x = self.x + self.padding.left
             for c in non_absolute_children:
                 c.x = x + c.margin.left
-                c.update_layout()
+                if not c.w:
+                    c.update_layout()
                 if c.w:
                     w = max(w, c.w + c.margin.spacing_x())
-            self.w = w
-
-        for c in self.children:
-            c.update_layout()
+            self.w = w + self.padding.right
+        else:
+            for c in self.children:
+                c.update_layout()
 
         if self.align == 'end':
             x = self.x - self.padding.right + self.w
