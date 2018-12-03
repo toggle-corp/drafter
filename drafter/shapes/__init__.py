@@ -1,8 +1,14 @@
 import gi
+gi.require_version('Gdk', '3.0')  # noqa
 gi.require_version('Pango', '1.0')  # noqa
 gi.require_version('PangoCairo', '1.0')  # noqa
 
-from gi.repository import Pango, PangoCairo
+from gi.repository import (
+    Pango,
+    PangoCairo,
+    Gdk,
+    GdkPixbuf,
+)
 import math
 import cairo
 
@@ -106,6 +112,11 @@ class Arc(LineShape):
         self.draw_stroke(ctx)
 
 
+class Circle(Arc):
+    angle1 = 0
+    angle2 = math.pi * 2
+
+
 class Line(LineShape):
     p1 = [0, 0]
     p2 = [0, 0]
@@ -138,7 +149,7 @@ class Rectangle(LineShape):
         ctx.set_source_rgba(*self.color)
         ctx.fill_preserve()
 
-        self.draw_stroke()
+        self.draw_stroke(ctx)
 
 
 class Polygon(LineShape):
@@ -309,5 +320,33 @@ class String(Shape):
 
         ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(ctx, layout)
+
+        ctx.restore()
+
+
+class Image(Shape):
+    filename = None
+    width = None
+    height = None
+    pos = [0, 0]
+
+    def render(self, ctx):
+        pb = GdkPixbuf.Pixbuf.new_from_file(self.filename)
+        img_w = pb.get_width()
+        img_h = pb.get_height()
+
+        w = self.width or img_w
+        h = self.height or img_h
+
+        ctx.save()
+
+        scale_x = w / img_w
+        scale_y = h / img_h
+
+        ctx.translate(self.pos[0], self.pos[1])
+        ctx.scale(scale_x, scale_y)
+
+        Gdk.cairo_set_source_pixbuf(ctx, pb, 0, 0)
+        ctx.paint()
 
         ctx.restore()

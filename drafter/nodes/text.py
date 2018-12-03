@@ -30,6 +30,7 @@ class Text(Node):
     wrap_mode = WORD_WRAP
     alignment = LEFT
     vertical_alignment = TOP
+    line_spacing = None
 
     def calculate_layout(self):
         super().calculate_layout()
@@ -46,20 +47,27 @@ class Text(Node):
             layout.set_text(self.text, -1)
         if self.markup:
             layout.set_markup(self.markup, -1)
-
-        extents = layout.get_extents()[1]
-        extents = [
-            extents.width / Pango.SCALE,
-            extents.height / Pango.SCALE,
-        ]
-        self.extents = extents
+        if self.line_spacing is not None:
+            layout.set_spacing(self.line_spacing * Pango.SCALE)
 
         if self.w is None:
+            extents = layout.get_extents()[1]
+            extents = [
+                extents.width / Pango.SCALE,
+                extents.height / Pango.SCALE,
+            ]
+            self.extents = extents
             self.w = (extents[0] + self.padding.spacing_x())
         else:
             w = self.w - self.padding.spacing_x()
             layout.set_width(w * Pango.SCALE)
             layout.set_wrap(self.wrap_mode)
+            extents = layout.get_extents()[1]
+            extents = [
+                extents.width / Pango.SCALE,
+                extents.height / Pango.SCALE,
+            ]
+            self.extents = extents
 
         if self.h is None:
             self.h = (extents[1] + self.padding.spacing_y())
@@ -85,6 +93,8 @@ class Text(Node):
             layout.set_text(self.text, -1)
         if self.markup:
             layout.set_markup(self.markup, -1)
+        if self.line_spacing is not None:
+            layout.set_spacing(self.line_spacing * Pango.SCALE)
 
         if not w:
             layout.set_width(-1)
