@@ -27,7 +27,7 @@ class Image(Node):
                 self.w = img_w
 
         if not self.h:
-            self.h = img_h * self.w / img_h
+            self.h = img_h * self.w / img_w
 
     def draw_content(self, x, y, w, h):
         self.ctx.save()
