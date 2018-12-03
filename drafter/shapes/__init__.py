@@ -329,6 +329,8 @@ class Image(Shape):
     width = None
     height = None
     pos = [0, 0]
+    center = False
+    scale_uniform = False
 
     def render(self, ctx):
         pb = GdkPixbuf.Pixbuf.new_from_file(self.filename)
@@ -342,9 +344,15 @@ class Image(Shape):
 
         scale_x = w / img_w
         scale_y = h / img_h
+        if self.scale_uniform:
+            if not self.height:
+                scale_y = scale_x
+            elif not self.width:
+                scale_x = scale_y
 
         ctx.translate(self.pos[0], self.pos[1])
         ctx.scale(scale_x, scale_y)
+        ctx.translate(-img_w / 2, -img_h / 2)
 
         Gdk.cairo_set_source_pixbuf(ctx, pb, 0, 0)
         ctx.paint()
