@@ -12,11 +12,6 @@ class Row(Node):
         # number, resolving % values.
         self.calculate_layout()
 
-        # Calculate absolute layout of children
-        for c in self.children:
-            if c.absolute:
-                c.update_absolute_layout()
-
         non_absolute_children = [
             c for c in self.children if not c.absolute
         ]
@@ -93,4 +88,6 @@ class Row(Node):
                 c.y = y + c.margin.top
 
         for c in self.children:
+            if c.absolute:
+                c.update_absolute_layout()
             c.update_layout()

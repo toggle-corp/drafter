@@ -31,6 +31,7 @@ class Text(Node):
     alignment = LEFT
     vertical_alignment = TOP
     line_spacing = None
+    auto_scale = False
 
     def calculate_layout(self):
         super().calculate_layout()
@@ -104,6 +105,13 @@ class Text(Node):
 
         if h > 0:
             layout.set_height(h)
+
+        if self.auto_scale:
+            scale = min(
+                w / self.extents[0] if w and w < self.extents[0] else 1,
+                h / self.extents[1] if h and h < self.extents[1] else 1,
+            )
+            self.ctx.scale(scale, scale)
 
         self.ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(self.ctx, layout)

@@ -1,4 +1,5 @@
 from drafter.utils import Rect, Border
+import math
 
 
 class Node:
@@ -9,6 +10,7 @@ class Node:
         self.y = 0
         self.width = None
         self.height = None
+        self.angle = 0
 
         self.top = None
         self.left = None
@@ -70,14 +72,14 @@ class Node:
             if self.left is not None:
                 self.x = self.relative_parent.x \
                     + self.left + self.margin.left
-            elif self.right is not None:
+            elif self.right is not None and self.relative_parent.w:
                 self.x = self.relative_parent.x + self.relative_parent.w \
                     - self.right - self.margin.right - self.w
 
             if self.top is not None:
                 self.y = self.relative_parent.y \
                     + self.top + self.margin.top
-            elif self.bottom is not None:
+            elif self.bottom is not None and self.relative_parent.h:
                 self.y = self.relative_parent.y + self.relative_parent.h \
                     - self.bottom - self.margin.bottom - self.h
         self.update_layout()
@@ -130,6 +132,7 @@ class Node:
 
     def draw(self):
         self.border.draw(self.ctx, self.x, self.y, self.w, self.h)
+        self.ctx.save()
         self.ctx.set_source_rgba(*self.bg_color)
         self.ctx.fill()
 
@@ -137,6 +140,12 @@ class Node:
         y = self.y + self.padding.top
         w = self.w - self.padding.spacing_x()
         h = self.h - self.padding.spacing_y()
+        angle = self.angle * math.pi / 180
+
+        if angle:
+            self.ctx.translate(x, y)
+            self.ctx.rotate(angle)
+            self.ctx.translate(-x, -y)
 
         self.draw_content(x, y, w, h)
 
@@ -145,3 +154,5 @@ class Node:
             for c in self.children
             if c.can_draw()
         ]
+
+        self.ctx.restore()

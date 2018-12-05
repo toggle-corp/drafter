@@ -10,10 +10,6 @@ class Column(Node):
 
         self.calculate_layout()
 
-        for c in self.children:
-            if c.absolute:
-                c.update_absolute_layout()
-
         non_absolute_children = [
             c for c in self.children if not c.absolute
         ]
@@ -89,4 +85,6 @@ class Column(Node):
                 c.x = x + c.margin.left
 
         for c in self.children:
+            if c.absolute:
+                c.update_absolute_layout()
             c.update_layout()
