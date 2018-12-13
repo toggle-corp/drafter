@@ -5,7 +5,7 @@ gi.require_version('PangoCairo', '1.0')  # noqa
 from gi.repository import Pango, PangoCairo
 from drafter.node import Node
 
-from .. import utils
+from drafter import utils
 
 # TODO Reuse pango context instead of using
 # create_layout out of cairo context everytime.

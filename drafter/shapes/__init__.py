@@ -1,3 +1,6 @@
+import math
+
+import cairo
 import gi
 gi.require_version('Gdk', '3.0')  # noqa
 gi.require_version('Pango', '1.0')  # noqa
@@ -9,9 +12,9 @@ from gi.repository import (
     Gdk,
     GdkPixbuf,
 )
-import math
-import cairo
 
+
+from drafter import utils
 
 class Shape:
     def __init__(self, **kwargs):
@@ -250,13 +253,16 @@ class String(Shape):
     width = None
     height = None
 
+    font_family = None
+    font_size = None
+    font_weight = None
+
     def calc_extents(self, ctx):
         if not self.text and not self.markup:
             return [0, 0]
 
         layout = PangoCairo.create_layout(ctx)
-        desc = Pango.font_description_from_string(self.font)
-        layout.set_font_description(desc)
+        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
         layout.set_alignment(self.alignment)
 
         if self.text:
@@ -300,8 +306,7 @@ class String(Shape):
         ctx.translate(self.pos[0], self.pos[1])
 
         layout = PangoCairo.create_layout(ctx)
-        desc = Pango.font_description_from_string(self.font)
-        layout.set_font_description(desc)
+        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
         layout.set_alignment(self.alignment)
 
         if self.text:
