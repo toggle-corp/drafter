@@ -1,3 +1,5 @@
 ## Setup
 
+```
 pip install .
+```
