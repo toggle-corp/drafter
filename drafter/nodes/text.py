@@ -5,6 +5,7 @@ gi.require_version('PangoCairo', '1.0')  # noqa
 from gi.repository import Pango, PangoCairo
 from drafter.node import Node
 
+from .. import utils
 
 # TODO Reuse pango context instead of using
 # create_layout out of cairo context everytime.
@@ -14,6 +15,9 @@ class Text(Node):
     WORD_WRAP = Pango.WrapMode.WORD
     CHAR_WRAP = Pango.WrapMode.WORD_CHAR
     WORD_CHAR_WRAP = Pango.WrapMode.WORD_CHAR
+
+    NORMAL = Pango.Weight.NORMAL
+    BOLD = Pango.Weight.BOLD
 
     LEFT = Pango.Alignment.LEFT
     CENTER = Pango.Alignment.CENTER
@@ -31,7 +35,10 @@ class Text(Node):
     alignment = LEFT
     vertical_alignment = TOP
     line_spacing = None
-    auto_scale = False
+
+    font_family = None
+    font_size = None
+    font_weight = None
 
     def calculate_layout(self):
         super().calculate_layout()
@@ -40,12 +47,12 @@ class Text(Node):
             return
 
         layout = PangoCairo.create_layout(self.ctx)
-        desc = Pango.font_description_from_string(self.font)
-        layout.set_font_description(desc)
+        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
         layout.set_alignment(self.alignment)
 
         if self.text:
-            layout.set_text(self.text, -1)
+            #TODO: nan!!
+            layout.set_text(str(self.text), -1)
         if self.markup:
             layout.set_markup(self.markup, -1)
         if self.line_spacing is not None:
@@ -87,11 +94,30 @@ class Text(Node):
 
         layout = PangoCairo.create_layout(self.ctx)
         desc = Pango.font_description_from_string(self.font)
+
+        if self.font_family is not None:
+            font_map = PangoCairo.font_map_get_default()
+            new_desc = next(
+                (v.list_faces()[1].describe() for v in font_map.list_families()
+                 if self.font_family.lower() in v.get_name().lower())
+            , None)
+            if new_desc:
+                desc = new_desc
+                desc.set_style(Pango.Style.NORMAL)
+                desc.set_weight(Pango.Weight.NORMAL)
+
+        if self.font_size is not None:
+            desc.set_size(self.font_size * Pango.SCALE)
+
+        if self.font_weight is not None:
+            desc.set_weight(self.font_weight)
+
         layout.set_font_description(desc)
         layout.set_alignment(self.alignment)
 
         if self.text:
-            layout.set_text(self.text, -1)
+            #TODO: nan!!
+            layout.set_text(str(self.text), -1)
         if self.markup:
             layout.set_markup(self.markup, -1)
         if self.line_spacing is not None:
@@ -105,13 +131,6 @@ class Text(Node):
 
         if h > 0:
             layout.set_height(h)
-
-        if self.auto_scale:
-            scale = min(
-                w / self.extents[0] if w and w < self.extents[0] else 1,
-                h / self.extents[1] if h and h < self.extents[1] else 1,
-            )
-            self.ctx.scale(scale, scale)
 
         self.ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(self.ctx, layout)
