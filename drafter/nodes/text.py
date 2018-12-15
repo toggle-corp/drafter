@@ -47,6 +47,8 @@ class Text(Node):
             return
 
         layout = PangoCairo.create_layout(self.ctx)
+        # if self.font_size:
+        #     self.font_size*=.991
         layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
         layout.set_alignment(self.alignment)
 
@@ -107,6 +109,7 @@ class Text(Node):
                 desc.set_weight(Pango.Weight.NORMAL)
 
         if self.font_size is not None:
+            # self.font_size *= .991
             desc.set_size(self.font_size * Pango.SCALE)
 
         if self.font_weight is not None:
@@ -129,11 +132,8 @@ class Text(Node):
             layout.set_width(w * Pango.SCALE)
             layout.set_wrap(self.wrap_mode)
 
-        h*3
-
         if h > 0:
             layout.set_height(h)
-
 
         self.ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(self.ctx, layout)

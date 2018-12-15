@@ -13,7 +13,6 @@ from gi.repository import (
     GdkPixbuf,
 )
 
-
 from drafter import utils
 
 class Shape:
@@ -175,6 +174,38 @@ class Polygon(LineShape):
 
         self.draw_stroke()
 
+class SlantedLine(LineShape):
+    """draw a line with one change in dir, ie:
+        ______________P2
+       /
+      /
+    P1
+
+    traverse 1/3 towards P2 on X and then get to full vert the continue horizontally
+    """
+    """
+    p1[x,y]
+    p2[x,y]
+    """
+    def render(self, ctx):
+        self.p1x, self.p1y = self.p1
+
+        if self.rel_move:
+            self.p2x = self.p1x + self.p2[0]
+            self.p2y = self.p1y + self.p2[1]
+
+        else:
+            self.p2x, self.p2y = self.p2
+
+        ang = [self.p1x + (self.pct_cut)*(self.p2x-self.p1x), self.p2y]
+        ctx.move_to(*[self.p1x, self.p1y])
+
+        ctx.line_to(*ang)
+        ctx.move_to(*ang)
+
+        ctx.line_to(*[self.p2x, self.p2y])
+
+        self.draw_stroke(ctx)
 
 class Arrow:
     p1 = [0, 0]
