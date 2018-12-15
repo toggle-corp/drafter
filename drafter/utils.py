@@ -1,4 +1,8 @@
 import cairo
+
+import gi
+gi.require_version('Pango', '1.0')
+gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo
 
 def get_font(font, font_family, font_size, font_weight):
@@ -18,6 +22,7 @@ def get_font(font, font_family, font_size, font_weight):
 
     if font_size is not None:
         desc.set_size(font_size * Pango.SCALE)
+
 
     if font_weight is not None:
         desc.set_weight(font_weight)

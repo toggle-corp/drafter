@@ -1,7 +1,9 @@
+import cairo
 import gi
 
 gi.require_version('Gdk', '3.0')  # noqa
-from gi.repository import Gdk, GdkPixbuf
+gi.require_version('Rsvg', '2.0')
+from gi.repository import Gdk, GdkPixbuf, Rsvg
 
 from drafter.node import Node
 
@@ -10,7 +12,27 @@ class Image(Node):
     filename = None
 
     def init(self):
-        self.pb = GdkPixbuf.Pixbuf.new_from_file(self.filename)
+        if self.filename.split('.')[-1] == 'svg':
+
+            # use rsvg to render the cairo context
+            handle = Rsvg.Handle()
+            svg = handle.new_from_file(self.filename)
+            # print(self.filename)
+            # print(svg.get_dimensions())
+
+            self.pb = svg.get_pixbuf()
+            # print(self.pb.get_width())
+            # print(self.pb.get_height())
+
+        else:
+            self.pb = GdkPixbuf.Pixbuf.new_from_file(self.filename)
+
+        # 1052
+        # 744
+
+
+        # self.pb = GdkPixbuf.Pixbuf.new_from_file_at_scale(self.filename, 100, 100, True)
+
         self.img_w = self.pb.get_width()
         self.img_h = self.pb.get_height()
 

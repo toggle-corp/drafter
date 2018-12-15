@@ -129,8 +129,11 @@ class Text(Node):
             layout.set_width(w * Pango.SCALE)
             layout.set_wrap(self.wrap_mode)
 
+        h*3
+
         if h > 0:
             layout.set_height(h)
+
 
         self.ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(self.ctx, layout)
