@@ -52,9 +52,6 @@ class Text(Node):
         layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
         layout.set_alignment(self.alignment)
 
-        if self.text:
-            #TODO: nan!!
-            layout.set_text(str(self.text), -1)
         if self.markup:
             layout.set_markup(self.markup, -1)
         if self.line_spacing is not None:
@@ -135,7 +132,10 @@ class Text(Node):
         if h > 0:
             layout.set_height(h)
 
+        # from . import np_conv
+        # ctx = np_conv.get_ctx(self.ctx, self.text)
         self.ctx.set_source_rgba(*self.color)
+
         PangoCairo.show_layout(self.ctx, layout)
 
         self.ctx.restore()

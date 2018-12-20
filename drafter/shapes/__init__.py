@@ -33,9 +33,7 @@ class LineShape(Shape):
     line_cap = CAP_BUTT
 
     def draw_stroke(self, ctx):
-        if self.line_width != 0:
-            ctx.set_line_width(self.line_width)
-
+        ctx.set_line_width(self.line_width)
         ctx.set_source_rgba(*self.line_color)
         ctx.set_dash(self.line_dash)
         ctx.set_line_cap(self.line_cap)
