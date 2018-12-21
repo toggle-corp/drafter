@@ -288,6 +288,8 @@ class String(Shape):
     font_size = None
     font_weight = None
 
+    auto_scale = False
+
     def calc_extents(self, ctx):
         if not self.text and not self.markup:
             return [0, 0]
@@ -311,6 +313,7 @@ class String(Shape):
             layout.set_height(self.height)
 
         extents = layout.get_extents()[1]
+
         return [
             extents.width / Pango.SCALE,
             extents.height / Pango.SCALE,
@@ -353,6 +356,13 @@ class String(Shape):
 
         if self.height:
             layout.set_height(self.height)
+
+        if self.auto_scale:
+            scale = min(
+                self.width / self.extents[0] if self.width and self.width < self.extents[0] else 1,
+                self.height / self.extents[1] if self.height and self.height< self.extents[1] else 1,
+            )
+            self.ctx.scale(scale, scale)
 
         ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(ctx, layout)
