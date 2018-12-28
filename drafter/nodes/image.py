@@ -16,7 +16,11 @@ class Image(Node):
 
             # use rsvg to render the cairo context
             handle = Rsvg.Handle()
-            svg = handle.new_from_file(self.filename)
+            #TODO: revert when working?
+            try:
+                svg = handle.new_from_file(self.filename)
+            except:
+                svg = handle.new_from_file('/Users/ewanog/Documents/work/code/repos/palika-profile/resources/images/no_map.svg')
             # print(self.filename)
             # print(svg.get_dimensions())
 
