@@ -5,27 +5,42 @@ gi.require_version('Pango', '1.0')
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import Pango, PangoCairo
 
-def get_font(font, font_family, font_size, font_weight):
+def get_font(font, font_family, font_size, font_weight, font_stretch):
     """work around for Roboto Condensed not working on OS X"""
     desc = Pango.font_description_from_string(font)
 
     if font_family is not None:
+        '''
+        if ' condensed' in font_family:
+            font_family = font_family.replace(' condensed', '')
+            font_stretch = Pango.Stretch.EXPANDED
+        elif ' Condensed' in font_family:
+            font_family = font_family.replace(' Condensed', '')
+            font_stretch = Pango.Stretch.EXPANDED
+        '''
+
         font_map = PangoCairo.font_map_get_default()
         new_desc = next(
             (v.list_faces()[0].describe() for v in font_map.list_families()
              if font_family.lower() in v.get_name().lower())
             , None)
+
         if new_desc:
             desc = new_desc
             desc.set_style(Pango.Style.NORMAL)
             desc.set_weight(Pango.Weight.NORMAL)
+            desc.set_stretch(Pango.Stretch.NORMAL)
+        else:
+            print('"{}" font family not found. "{}" used as fallback.'.format(font_family, font))
 
     if font_size is not None:
-        desc.set_size(font_size * Pango.SCALE)
-
+        desc.set_size(font_size * Pango.SCALE * 0.68)
 
     if font_weight is not None:
         desc.set_weight(font_weight)
+
+    if font_stretch is not None:
+        desc.set_stretch(font_stretch)
 
     return desc
 

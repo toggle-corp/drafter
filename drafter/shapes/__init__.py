@@ -287,13 +287,14 @@ class String(Shape):
     font_family = None
     font_size = None
     font_weight = None
+    font_stretch = None
 
     def calc_extents(self, ctx):
         if not self.text and not self.markup:
             return [0, 0]
 
         layout = PangoCairo.create_layout(ctx)
-        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
+        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight, self.font_stretch))
         layout.set_alignment(self.alignment)
 
         if self.text:
@@ -337,7 +338,7 @@ class String(Shape):
         ctx.translate(self.pos[0], self.pos[1])
 
         layout = PangoCairo.create_layout(ctx)
-        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
+        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight, self.font_stretch))
         layout.set_alignment(self.alignment)
 
         if self.text:

@@ -7,6 +7,7 @@ from drafter.node import Node
 
 from drafter import utils
 
+
 # TODO Reuse pango context instead of using
 # create_layout out of cairo context everytime.
 
@@ -39,6 +40,7 @@ class Text(Node):
     font_family = None
     font_size = None
     font_weight = None
+    font_stretch = None
 
     auto_scale_height = False
 
@@ -51,7 +53,7 @@ class Text(Node):
         layout = PangoCairo.create_layout(self.ctx)
         # if self.font_size:
         #     self.font_size*=.991
-        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight))
+        layout.set_font_description(utils.get_font(self.font, self.font_family, self.font_size, self.font_weight, self.font_stretch))
         layout.set_alignment(self.alignment)
 
         if self.text:
@@ -97,26 +99,8 @@ class Text(Node):
             self.ctx.translate(x, y)
 
         layout = PangoCairo.create_layout(self.ctx)
-        desc = Pango.font_description_from_string(self.font)
 
-        if self.font_family is not None:
-            font_map = PangoCairo.font_map_get_default()
-            new_desc = next(
-                (v.list_faces()[1].describe() for v in font_map.list_families()
-                 if self.font_family.lower() in v.get_name().lower())
-            , None)
-            if new_desc:
-                desc = new_desc
-                desc.set_style(Pango.Style.NORMAL)
-                desc.set_weight(Pango.Weight.NORMAL)
-
-        if self.font_size is not None:
-            # self.font_size *= .991
-            desc.set_size(self.font_size * Pango.SCALE)
-
-        if self.font_weight is not None:
-            desc.set_weight(self.font_weight)
-
+        desc = utils.get_font(self.font, self.font_family, self.font_size, self.font_weight, self.font_stretch)
         layout.set_font_description(desc)
         layout.set_alignment(self.alignment)
 
