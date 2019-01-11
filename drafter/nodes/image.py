@@ -1,3 +1,5 @@
+import os
+
 import cairo
 import gi
 
@@ -9,20 +11,17 @@ from drafter.node import Node
 
 
 class Image(Node):
-    filename = None
+    """handle image as either svg or other. provide default filename incase provided one is missing"""
 
     def init(self):
-        if self.filename.split('.')[-1] == 'svg':
+        if not os.path.isfile(self.filename):
+            self.filename = self.default_filename
 
+        if self.filename.split('.')[-1] == 'svg':
             # use rsvg to render the cairo context
             handle = Rsvg.Handle()
             svg = handle.new_from_file(self.filename)
-            # print(self.filename)
-            # print(svg.get_dimensions())
-
             self.pb = svg.get_pixbuf()
-            # print(self.pb.get_width())
-            # print(self.pb.get_height())
 
         else:
             self.pb = GdkPixbuf.Pixbuf.new_from_file(self.filename)

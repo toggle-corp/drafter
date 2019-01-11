@@ -40,7 +40,7 @@ class Text(Node):
     font_size = None
     font_weight = None
 
-    auto_scale = False
+    auto_scale_height = False
 
     def calculate_layout(self):
         super().calculate_layout()
@@ -137,12 +137,21 @@ class Text(Node):
         if h > 0:
             layout.set_height(h)
 
-        if self.auto_scale:
-            scale = min(
-                w / self.extents[0] if w and w < self.extents[0] else 1,
-                h / self.extents[1] if h and h < self.extents[1] else 1,
-            )
-            self.ctx.scale(scale, scale)
+        if self.auto_scale_height:
+            #WIP!!
+            xbearing, ybearing, width, height, xadvance, yadvance = self.ctx.text_extents('DFADSF')
+            print('height ', h)
+            print('ext h', self.extents[1])
+            print('width ', w)
+            print('ext w', self.extents[0])
+
+            # print('ext w', self.extents[0])
+            print()
+            # print('t', height)
+            # w / self.extents[0] if w and w < self.extents[0] else 1
+            # h / self.extents[1] if h and h < self.extents[1] else 1
+
+            self.ctx.scale(1, h / self.extents[1] if h and h < self.extents[1] else 1)
 
         self.ctx.set_source_rgba(*self.color)
         PangoCairo.show_layout(self.ctx, layout)
