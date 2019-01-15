@@ -34,7 +34,7 @@ def get_font(font, font_family, font_size, font_weight, font_stretch):
             print('"{}" font family not found. "{}" used as fallback.'.format(font_family, font))
 
     if font_size is not None:
-        desc.set_size(font_size * Pango.SCALE * 0.68)
+        desc.set_size(font_size * Pango.SCALE * 0.72)
 
     if font_weight is not None:
         desc.set_weight(font_weight)
